@@ -846,6 +846,16 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
+name = "uwsgi"
+version = "2.0.22"
+description = "The uWSGI server"
+optional = false
+python-versions = "*"
+files = [
+    {file = "uwsgi-2.0.22.tar.gz", hash = "sha256:4cc4727258671ac5fa17ab422155e9aaef8a2008ebb86e4404b66deaae965db2"},
+]
+
+[[package]]
 name = "werkzeug"
 version = "3.0.0"
 description = "The comprehensive WSGI web application library."
@@ -865,4 +875,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "af9abd96ac8599a685557842cc546797f3ee6506b436aa461103d5c9b813b21c"
+content-hash = "aec920be159b5fb97d040c1ae3362b5b6e10c10856573f7d2fc0dc0920df5e7a"
