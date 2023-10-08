@@ -68,9 +68,9 @@ will be something like `https://example.com/webhook`.
 
 ## Configuration
 
-You can reference the `.env.example` file for a list of all the configuration
-options.  You can either copy the `.env.example` file to `.env` and edit it
-directly, or you can set the environment variables directly.
+You can reference the `config.sample.yml` file for a list of all the configuration
+options.  You can copy the `config.sample.yml` file to `config.yml` and edit it
+to configure the project.
 
 ## Deployment
 

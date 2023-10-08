@@ -1,0 +1,26 @@
+github:
+  org: vexxhost
+  token: ghp_XXXXXXXXXXXXXXXXXXXXXXXXXX
+
+openstack:
+  cloud: github-ci
+
+pools:
+  - min_ready: 5
+    runner:
+      label: v3-standard-4
+      group: 6
+    instance:
+      key_name: miniyubikey
+      flavor: v3-standard-16
+      image: jammy-server-cloudimg-amd64
+      network: public
+  - min_ready: 5
+    runner:
+      label: v3-standard-16
+      group: 6
+    instance:
+      key_name: miniyubikey
+      flavor: v3-standard-16
+      image: jammy-server-cloudimg-amd64
+      network: public
