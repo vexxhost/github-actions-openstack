@@ -13,7 +13,7 @@ fi
 
 # Create "runner" user if it doesn't exist
 if ! getent passwd ${RUNNER_USER}; then
-    useradd -r -g ${RUNNER_USER} -d /runner -s /usr/sbin/nologin -c "GitHub Actions Runner" runner
+    useradd -r -g ${RUNNER_USER} -d /runner -c "GitHub Actions Runner" runner
 fi
 
 # Add "runner" user to the sudoers
