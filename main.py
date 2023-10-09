@@ -3,6 +3,7 @@
 import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+import logging
 import random
 import string
 import yaml
@@ -19,6 +20,8 @@ with open("config.yml", "r", encoding="utf-8") as fd:
 CLOUD = openstack.connect(cloud=CFG["openstack"]["cloud"])
 
 app = Flask(__name__)
+app.logger.setLevel(logging.INFO)
+
 webhook = Webhook(app, endpoint="/webhook")
 
 scheduler = APScheduler()
@@ -123,6 +126,7 @@ def scale_up(pool: dict):
         key_name=pool["instance"].get("key_name"),
         userdata=cloud_init,
         wait=True,
+        timeout=300,
     )
 
     # TODO: If we fail here, we should delete the runner token
