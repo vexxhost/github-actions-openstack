@@ -66,6 +66,18 @@ You will need to configure a webhook in GitHub to point to the webhook URL
 which will be pointing to the server that is running this project.  The URL
 will be something like `https://example.com/webhook`.
 
+## Images
+
+This project should work with any basic Linux image, but in order to be able to
+get the same experience as the GitHub hosted runners, you should use an image
+built using the [`vexxhost/runner-images`](https://github.com/vexxhost/runner-images)
+project which is a fork which can build images for OpenStack.
+
+If you are using VEXXHOST, you can simply use the following image names which
+are built using the `vexxhost/runner-images` project:
+
+- `ubuntu-22.04-github-runner`
+
 ## Configuration
 
 You can reference the `config.sample.yml` file for a list of all the configuration
