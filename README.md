@@ -94,7 +94,7 @@ used to deploy the project.  You can also deploy it manually if you prefer.
 ```bash
 git clone https://github.com/vexxhost/github-actions-openstack.git
 cd github-actions-openstack
-cp .env.example .env
-# Edit .env to configure the project
+cp config.sample.yml config.yml
+# Edit config.yml to configure the project
 docker-compose up -d
 ```

@@ -13,7 +13,7 @@ pools:
     instance:
       key_name: miniyubikey
       flavor: v3-standard-16
-      image: jammy-server-cloudimg-amd64
+      image: ubuntu-22.04-github-runner
       network: public
   - min_ready: 5
     runner:
@@ -22,5 +22,5 @@ pools:
     instance:
       key_name: miniyubikey
       flavor: v3-standard-16
-      image: jammy-server-cloudimg-amd64
+      image: ubuntu-22.04-github-runner
       network: public
