@@ -94,11 +94,10 @@ def maintain_min_ready_for_pool(pool: dict):
         app.logger.info("Scaling up %s nodes", nodes_to_create)
 
         with ThreadPoolExecutor(max_workers=4) as executor:
-            for _ in range(nodes_to_create):
-                future_to_scale_up = {
-                    executor.submit(scale_up, pool): pool["instance"]["flavor"]
-                    for _ in range(nodes_to_create)
-                }
+            future_to_scale_up = {
+                executor.submit(scale_up, pool): pool["instance"]["flavor"]
+                for _ in range(nodes_to_create)
+            }
 
             for future in concurrent.futures.as_completed(future_to_scale_up):
                 future.result()
