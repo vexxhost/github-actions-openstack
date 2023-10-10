@@ -13,17 +13,14 @@ fi
 
 # Create "runner" user if it doesn't exist
 if ! getent passwd ${RUNNER_USER}; then
-    useradd -r -g ${RUNNER_USER} -d /runner -c "GitHub Actions Runner" runner
+    useradd -r -g ${RUNNER_USER} -m -d /runner -c "GitHub Actions Runner" runner
 fi
 
 # Add "runner" user to the sudoers
 echo "runner ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Create folders for runner
-mkdir -p /runner
-cd /runner
-
 # Download the runner package
+cd /runner
 curl -o actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 echo "${RUNNER_CHECKSUM}  actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" | shasum -a 256 -c
 tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
