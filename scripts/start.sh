@@ -27,4 +27,4 @@ tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 chown -R ${RUNNER_USER}:${RUNNER_GROUP} /runner
 
 # Start the runner
-systemd-run --uid=runner --gid=runner ./run.sh --jitconfig ${RUNNER_JITCONFIG}
+sudo -u runner -s -- nohup ./run.sh --jitconfig ${RUNNER_JITCONFIG} &
