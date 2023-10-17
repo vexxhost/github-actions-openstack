@@ -14,6 +14,7 @@ flask-apscheduler = "^1.13.0"
 github-webhook = "^1.0.4"
 openstacksdk = "^1.5.0"
 uwsgi = "^2.0.22"
+pygithub = "^2.1.1"
 
 [build-system]
 requires = ["poetry-core"]

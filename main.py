@@ -8,6 +8,8 @@ import random
 import string
 import yaml
 
+import github
+
 from flask import Flask
 from flask_apscheduler import APScheduler
 from github_webhook import Webhook
@@ -78,7 +80,7 @@ def maintain_min_ready_for_pool(pool: dict):
         for runner in runners
         # NOTE(mnaser): Once scale_up ensures that the runner is ready, we
         #               should be able to add check here for online runners
-        if runner["busy"] is False
+        if runner.busy is False
     ]
 
     app.logger.info(
@@ -156,26 +158,34 @@ def generate_cloud_config_with_jitconfig(jitconfig: str):
     return "#cloud-config\n" + yaml.dump(cloud_config)
 
 
-def get_runners_for_organization(org: str):
-    response = requests.get(
-        "https://api.github.com/orgs/" + org + "/actions/runners",
-        timeout=5,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer " + CFG["github"]["token"],
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
+def get_runners(self):
+    return github.PaginatedList.PaginatedList(
+        github.SelfHostedActionsRunner.SelfHostedActionsRunner,
+        self._requester,
+        self.url + "/actions/runners",
+        None,
+        list_item="runners",
     )
-    response.raise_for_status()
-    return response.json().get("runners", [])
 
 
-def get_runners_by_label(org: str, label: str):
+github.Organization.Organization.get_runners = get_runners
+
+
+def get_runners_for_organization(org: str):
+    auth = github.Auth.Token(CFG["github"]["token"])
+    g = github.Github(auth=auth)
+
+    return g.get_organization(org).get_runners()
+
+
+def get_runners_by_label(
+    org: str, label: str
+) -> list[github.SelfHostedActionsRunner.SelfHostedActionsRunner]:
     runners = get_runners_for_organization(org)
     return [
         runner
         for runner in runners
-        if label in [label["name"] for label in runner["labels"]]
+        if label in [label["name"] for label in runner.labels()]
     ]
 
 
