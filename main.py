@@ -66,7 +66,7 @@ def maintain_min_ready():
         maintain_min_ready_for_pool(pool)
 
     servers = [s for s in CLOUD.compute.servers() if s.name.startswith("gha-")]
-    runners = get_runners_for_organization(CFG["github"]["org"])
+    runners = g.get_organization(CFG["github"]["org"]).get_runners()
 
     # Clean-up servers that don't have runners linked to them anymore
     runner_names = [runner.name for runner in runners]
@@ -202,14 +202,10 @@ def remove_self_hosted_runner(self, runner):
 github.Organization.Organization.remove_self_hosted_runner = remove_self_hosted_runner
 
 
-def get_runners_for_organization(org: str):
-    return g.get_organization(org).get_runners()
-
-
 def get_runners_by_label(
     org: str, label: str
 ) -> list[github.SelfHostedActionsRunner.SelfHostedActionsRunner]:
-    runners = get_runners_for_organization(org)
+    runners = g.get_organization(CFG["github"]["org"]).get_runners()
     return [
         runner
         for runner in runners
