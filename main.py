@@ -64,7 +64,7 @@ def maintain_min_ready():
 
     servers = [s for s in CLOUD.compute.servers() if s.name.startswith("gha-")]
     runners = get_runners_for_organization(CFG["github"]["org"])
-    runner_names = [runner["name"] for runner in runners]
+    runner_names = [runner.name for runner in runners]
     for server in servers:
         if server.name in runner_names:
             continue
