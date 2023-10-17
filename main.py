@@ -21,6 +21,9 @@ with open("config.yml", "r", encoding="utf-8") as fd:
     CFG = yaml.safe_load(fd)
 CLOUD = openstack.connect(cloud=CFG["openstack"]["cloud"])
 
+auth = github.Auth.Token(CFG["github"]["token"])
+g = github.Github(auth=auth)
+
 app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
@@ -64,6 +67,8 @@ def maintain_min_ready():
 
     servers = [s for s in CLOUD.compute.servers() if s.name.startswith("gha-")]
     runners = get_runners_for_organization(CFG["github"]["org"])
+
+    # Clean-up servers that don't have runners linked to them anymore
     runner_names = [runner.name for runner in runners]
     for server in servers:
         if server.name in runner_names:
@@ -71,6 +76,15 @@ def maintain_min_ready():
 
         app.logger.info("Deleting server %s", server.name)
         CLOUD.compute.delete_server(server)
+
+    # Clean-up runners that don't have servers linked to them anymore
+    server_names = [server.name for server in servers]
+    for runner in runners:
+        if runner.name in server_names:
+            continue
+
+        app.logger.info("Deleting runner %s", runner.name)
+        g.get_organization(CFG["github"]["org"]).remove_self_hosted_runner(runner)
 
 
 def maintain_min_ready_for_pool(pool: dict):
@@ -171,10 +185,24 @@ def get_runners(self):
 github.Organization.Organization.get_runners = get_runners
 
 
-def get_runners_for_organization(org: str):
-    auth = github.Auth.Token(CFG["github"]["token"])
-    g = github.Github(auth=auth)
+def remove_self_hosted_runner(self, runner):
+    assert isinstance(
+        runner, github.SelfHostedActionsRunner.SelfHostedActionsRunner
+    ) or isinstance(runner, int), runner
 
+    if isinstance(runner, github.SelfHostedActionsRunner.SelfHostedActionsRunner):
+        runner = runner.id
+
+    status, _, _ = self._requester.requestJson(
+        "DELETE", self.url + "/actions/runners/" + str(runner)
+    )
+    return status == 204
+
+
+github.Organization.Organization.remove_self_hosted_runner = remove_self_hosted_runner
+
+
+def get_runners_for_organization(org: str):
     return g.get_organization(org).get_runners()
 
 
