@@ -2,8 +2,8 @@
 
 RUNNER_USER=${RUNNER_USER:-ubuntu}
 RUNNER_GROUP=${RUNNER_GROUP:-ubuntu}
-RUNNER_VERSION=${RUNNER_VERSION:-2.311.0}
-RUNNER_CHECKSUM=${RUNNER_CHECKSUM:-29fc8cf2dab4c195bb147384e7e2c94cfd4d4022c793b346a6175435265aa278}
+RUNNER_VERSION=${RUNNER_VERSION:-2.323.0}
+RUNNER_CHECKSUM=${RUNNER_CHECKSUM:-0dbc9bf5a58620fc52cb6cc0448abcca964a8d74b5f39773b7afcad9ab691e19}
 RUNNER_JITCONFIG=___JIT_CONFIG___
 
 # Download the runner package
@@ -13,9 +13,6 @@ curl -o actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz -L https://github.com/
 echo "${RUNNER_CHECKSUM}  actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz" | shasum -a 256 -c
 tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 chown -R ${RUNNER_USER}:${RUNNER_GROUP} /opt/github/actions-runner
-
-# Add the runner user to the docker group
-usermod -aG docker ${RUNNER_USER}
 
 # Start the runner
 su - ubuntu -c "/opt/github/actions-runner/${RUNNER_VERSION}/run.sh --jitconfig ${RUNNER_JITCONFIG}" &

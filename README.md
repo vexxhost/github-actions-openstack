@@ -3,11 +3,27 @@
 This repository contains a project which allows you to deploy a fleet of
 self-hosted GitHub Actions runners on OpenStack.  This project was built,
 tested and developed against the [VEXXHOST](https://vexxhost.com) public cloud
-which is powered by [Atmosphere](https://vexxhost.com/private-cloud/atmosphere-openstack-depoyment/).
+which is powered by [Atmosphere](https://vexxhost.com/platform/), that you
+can find on [GitHub](https://github.com/vexxhost/atmosphere).
 
 If you are using Atmosphere, you should be able to use this project out of the
 box, but if you are using a different OpenStack provider, you may need to
 modify the `cloud-init` script to work with your provider.
+
+## Setup
+
+You'll need to create a `config.toml` file for the service to run, you can use
+the `config.sample.toml` file as a reference.
+
+### `github` section
+
+- `org`: The GitHub organization where you want to deploy the self-hosted runners.
+- `token`: You will need a token in order to be able to create self-hosted runners
+  in your organization.  We suggest using a personal access token that is scoped
+  to your organization with "Read and write" permissions for "Self-hosted runners".
+
+
+
 
 ## Usage
 

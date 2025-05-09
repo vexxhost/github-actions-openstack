@@ -1,12 +1,12 @@
-version: "3"
-
 services:
   controller:
     build: .
+    environment:
+      - RUST_LOG=debug
     volumes:
       - type: bind
-        source: config.yml
-        target: /app/config.yml
+        source: config.toml
+        target: /app/config.toml
       - type: bind
         source: $HOME/.config/openstack
         target: /etc/openstack

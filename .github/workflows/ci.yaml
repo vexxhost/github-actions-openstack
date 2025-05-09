@@ -1,0 +1,13 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  cargo:
+    uses: vexxhost/github-actions/.github/workflows/cargo.yml@main
