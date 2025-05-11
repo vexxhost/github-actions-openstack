@@ -1,0 +1,32 @@
+[github]
+org = "vexxhost"
+token = "github_pat_XXXXXXXXXXXXXXXXXXXXXXXXXX"
+
+[openstack]
+cloud = "github-ci"
+
+[[pools]]
+min_ready = 5
+
+[pools.runner]
+group_id = 6
+labels = ["vexxhost-ubuntu-22.04-4"]
+
+[pools.instance]
+key_name = "miniyubikey"
+flavor = "5f1eb09f-e764-4642-a16f-a7230ec025e7"
+image = "4ff73dd8-f706-4a17-abf4-79b7e0a52587"
+network = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235"
+
+[[pools]]
+min_ready = 5
+
+[pools.runner]
+group_id = 6
+labels = ["vexxhost-ubuntu-22.04-16"]
+
+[pools.instance]
+key_name = "miniyubikey"
+flavor = "8587d458-69de-4fc5-be51-c5e671bc35d5"
+image = "4ff73dd8-f706-4a17-abf4-79b7e0a52587"
+network = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235"

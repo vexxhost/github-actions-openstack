@@ -1,21 +1,26 @@
-FROM python:3.10-slim AS builder
-WORKDIR /app/
-RUN \
-  apt-get update && \
-  apt-get install -y --no-install-recommends gcc libc6-dev
-RUN \
-  --mount=type=cache,target=/root/.cache/pip \
-  pip install poetry
-RUN poetry config virtualenvs.in-project true
-ADD pyproject.toml poetry.lock /app/
-RUN \
-  --mount=type=cache,target=/root/.cache/pypoetry \
-  poetry install --no-root --no-interaction --no-ansi
+FROM rust:1.86.0 AS base
+RUN cargo install --locked cargo-chef sccache
+ENV RUSTC_WRAPPER=sccache SCCACHE_DIR=/sccache
 
-FROM python:3.10-slim
-ENV PATH="/app/.venv/bin:$PATH"
-COPY --from=builder /app/.venv /app/.venv
-COPY . /app/
+FROM base AS planner
+WORKDIR /app
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-WORKDIR /app/
-CMD ["uwsgi", "--ini", "contrib/uwsgi.ini"]
+FROM base AS builder
+WORKDIR /app
+COPY --from=planner /app/recipe.json recipe.json
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo chef cook --release --recipe-path recipe.json
+COPY . .
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
+    cargo build --release
+
+FROM base AS runtime
+WORKDIR /app
+COPY --from=builder /app/target/release/github-actions-openstack /usr/local/bin/github-actions-openstack
+ENTRYPOINT ["/usr/local/bin/github-actions-openstack"]
