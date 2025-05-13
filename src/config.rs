@@ -1,5 +1,6 @@
 use crate::cloud_config;
 use base64::prelude::*;
+use chrono::TimeDelta;
 use octocrab::{
     Octocrab,
     models::{
@@ -13,6 +14,7 @@ use openstack_sdk::{
         self, QueryAsync,
         compute::v2::server::{create_20, delete, list_detailed},
     },
+    auth::AuthState,
     config::ConfigFile,
     types::ServiceType,
 };
@@ -180,6 +182,9 @@ pub enum OpenStackError {
 
     #[error(transparent)]
     Api(#[from] openstack_sdk::api::ApiError<openstack_sdk::RestError>),
+
+    #[error(transparent)]
+    OpenStack(#[from] openstack_sdk::OpenStackError),
 }
 
 impl OpenStack {
@@ -187,17 +192,29 @@ impl OpenStack {
         skip(self),
         fields(cloud = %self.cloud)
     )]
-    fn session(&self) -> Result<&AsyncOpenStack, OpenStackError> {
+    async fn session(&mut self) -> Result<&AsyncOpenStack, OpenStackError> {
         tracing::debug!("checking openstack session");
-        self.session.as_ref().ok_or(OpenStackError::MissingSession)
+        let session = self
+            .session
+            .as_mut()
+            .ok_or(OpenStackError::MissingSession)?;
+
+        match session.get_auth_state(Some(TimeDelta::seconds(10))) {
+            Some(AuthState::Expired) | Some(AuthState::AboutToExpire) => {
+                session.authorize(None, false, true).await?;
+            }
+            _ => {}
+        }
+
+        Ok(session)
     }
 
     #[instrument(
         skip(self),
         fields(cloud = %self.cloud)
     )]
-    pub async fn list_nodes(&self) -> Result<Vec<ListServerResponse>, OpenStackError> {
-        let session = self.session()?;
+    pub async fn list_nodes(&mut self) -> Result<Vec<ListServerResponse>, OpenStackError> {
+        let session = self.session().await?;
 
         tracing::debug!("building server list request");
         let ep = list_detailed::Request::builder().build().map_err(|e| {
@@ -227,14 +244,14 @@ impl OpenStack {
         )
     )]
     pub async fn spawn_node(
-        &self,
+        &mut self,
         pool: &Pool,
         jitconfig: &SelfHostedRunnerJitConfig,
     ) -> Result<(), OpenStackError> {
         tracing::debug!("preparing cloud-init configuration");
         let cloud_init: cloud_config::Data = jitconfig.into();
 
-        let session = self.session()?;
+        let session = self.session().await?;
 
         tracing::debug!("building server creation request");
         let user_data = cloud_init.to_user_data()?;
@@ -277,8 +294,8 @@ impl OpenStack {
         skip(self, node),
         fields(node_id = %node.id)
     )]
-    pub async fn delete_node(&self, node: &ListServerResponse) -> Result<(), OpenStackError> {
-        let session = self.session()?;
+    pub async fn delete_node(&mut self, node: &ListServerResponse) -> Result<(), OpenStackError> {
+        let session = self.session().await?;
 
         tracing::debug!("building server deletion request");
         let ep = delete::Request::builder().id(&node.id).build()?;

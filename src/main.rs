@@ -16,7 +16,7 @@ use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberI
 
 #[derive(Clone)]
 struct AppState {
-    config: Arc<Config>,
+    config: Config,
 }
 
 #[tokio::main]
@@ -26,7 +26,7 @@ async fn main() -> Result<()> {
         .with(EnvFilter::from_default_env())
         .init();
 
-    let config = Arc::new(Config::load().await?);
+    let config = Config::load().await?;
     let app_state = AppState {
         config: config.clone(),
     };
@@ -35,11 +35,10 @@ async fn main() -> Result<()> {
         .route("/webhook", post(webhook))
         .with_state(app_state.clone());
 
-    let config_for_cron = config.clone();
     tokio::spawn(async move {
         loop {
             // Handle errors outside the maintenance cycle span
-            if let Err(e) = maintain_min_ready(&config_for_cron).await {
+            if let Err(e) = maintain_min_ready(config.clone()).await {
                 tracing::error!(error = %e, "failed to maintain minimum ready nodes");
             }
 
@@ -64,9 +63,9 @@ async fn webhook(
 }
 
 #[instrument(skip(config))]
-async fn maintain_min_ready(config: &Config) -> Result<()> {
+async fn maintain_min_ready(mut config: Config) -> Result<()> {
     for pool in config.pools.iter() {
-        maintain_min_ready_for_pool(config, pool).await?;
+        maintain_min_ready_for_pool(config.clone(), pool).await?;
     }
 
     let instances = config.openstack.list_nodes().await?;
@@ -176,7 +175,7 @@ fn should_delete_runner(
     min_ready = pool.min_ready,
     runner_group_id = pool.runner.group_id
 ))]
-async fn maintain_min_ready_for_pool(config: &Config, pool: &Pool) -> Result<()> {
+async fn maintain_min_ready_for_pool(config: Config, pool: &Pool) -> Result<()> {
     let runners = config
         .github
         .get_runners(Some(&pool.runner.labels[0]))
@@ -209,26 +208,28 @@ async fn maintain_min_ready_for_pool(config: &Config, pool: &Pool) -> Result<()>
             "initiating pool scaling operation"
         );
 
-        let config = Arc::new(config.clone());
         let pool = Arc::new(pool.clone());
 
         // Create a stream of node creation tasks
         let results = stream::iter((0..nodes_to_create).map(|i| {
-            let config = Arc::clone(&config);
             let pool = Arc::clone(&pool);
             let node_index = i + 1;
 
-            async move {
-                add_runner(&config, &pool)
-                    .await
-                    .map(|_| {
-                        tracing::info!(node_index, "successfully created node");
-                        (true, node_index)
-                    })
-                    .unwrap_or_else(|e| {
-                        tracing::error!(error = %e, node_index, "failed to create node");
-                        (false, node_index)
-                    })
+            {
+                let config = config.clone();
+
+                async move {
+                    add_runner(config, &pool)
+                        .await
+                        .map(|_| {
+                            tracing::info!(node_index, "successfully created node");
+                            (true, node_index)
+                        })
+                        .unwrap_or_else(|e| {
+                            tracing::error!(error = %e, node_index, "failed to create node");
+                            (false, node_index)
+                        })
+                }
             }
         }))
         .buffer_unordered(4)
@@ -257,7 +258,7 @@ async fn maintain_min_ready_for_pool(config: &Config, pool: &Pool) -> Result<()>
     pool_labels = ?pool.runner.labels,
     runner_group_id = pool.runner.group_id
 ))]
-async fn add_runner(config: &Config, pool: &Pool) -> Result<()> {
+async fn add_runner(mut config: Config, pool: &Pool) -> Result<()> {
     let jitconfig = config.github.generate_jitconfig(&pool.runner).await?;
 
     if let Err(e) = config.openstack.spawn_node(pool, &jitconfig).await {
