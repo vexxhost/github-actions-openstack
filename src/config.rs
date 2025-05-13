@@ -187,12 +187,17 @@ impl OpenStack {
         skip(self),
         fields(cloud = %self.cloud)
     )]
-    pub async fn list_nodes(&self) -> Result<Vec<ListServerResponse>, OpenStackError> {
+    fn session(&self) -> Result<&AsyncOpenStack, OpenStackError> {
         tracing::debug!("checking openstack session");
-        let session = self.session.as_ref().ok_or_else(|| {
-            tracing::error!("openstack session not initialized");
-            OpenStackError::MissingSession
-        })?;
+        self.session.as_ref().ok_or(OpenStackError::MissingSession)
+    }
+
+    #[instrument(
+        skip(self),
+        fields(cloud = %self.cloud)
+    )]
+    pub async fn list_nodes(&self) -> Result<Vec<ListServerResponse>, OpenStackError> {
+        let session = self.session()?;
 
         tracing::debug!("building server list request");
         let ep = list_detailed::Request::builder().build().map_err(|e| {
@@ -229,11 +234,7 @@ impl OpenStack {
         tracing::debug!("preparing cloud-init configuration");
         let cloud_init: cloud_config::Data = jitconfig.into();
 
-        tracing::debug!("checking openstack session");
-        let session = self.session.as_ref().ok_or_else(|| {
-            tracing::error!("openstack session not initialized");
-            OpenStackError::MissingSession
-        })?;
+        let session = self.session()?;
 
         tracing::debug!("building server creation request");
         let user_data = cloud_init.to_user_data()?;
@@ -277,11 +278,7 @@ impl OpenStack {
         fields(node_id = %node.id)
     )]
     pub async fn delete_node(&self, node: &ListServerResponse) -> Result<(), OpenStackError> {
-        tracing::debug!("checking openstack session");
-        let session = self.session.as_ref().ok_or_else(|| {
-            tracing::error!("openstack session not initialized");
-            OpenStackError::MissingSession
-        })?;
+        let session = self.session()?;
 
         tracing::debug!("building server deletion request");
         let ep = delete::Request::builder().id(&node.id).build()?;
