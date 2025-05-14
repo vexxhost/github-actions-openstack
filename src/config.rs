@@ -202,6 +202,9 @@ impl OpenStack {
         match session.get_auth_state(Some(TimeDelta::seconds(10))) {
             Some(AuthState::Expired) | Some(AuthState::AboutToExpire) => {
                 session.authorize(None, false, true).await?;
+                session
+                    .discover_service_endpoint(&ServiceType::Compute)
+                    .await?;
             }
             _ => {}
         }
