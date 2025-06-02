@@ -189,12 +189,7 @@ async fn maintain_min_ready_for_pool(config: Config, pool: &Pool) -> Result<()> 
         "completed runner inventory"
     );
 
-    let nodes_to_create = if pool.min_ready > idle_runners_count as u32 {
-        pool.min_ready - idle_runners_count as u32
-    } else {
-        0
-    };
-
+    let nodes_to_create = pool.min_ready.saturating_sub(idle_runners_count as u32);
     tracing::info!(
         required = pool.min_ready,
         available = idle_runners_count,
