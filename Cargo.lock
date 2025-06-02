@@ -1363,9 +1363,9 @@ checksum = "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
 
 [[package]]
 name = "openstack_sdk"
-version = "0.21.0"
+version = "0.21.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c4a170c60b2a8b6760e3b0e909c68217f8a5edf676bafda5bcb596935b6d3dc"
+checksum = "687cfcf7fa7d0f4a16118184a897ec19ce959ba389da547de6dd7f2c49e8288c"
 dependencies = [
  "async-trait",
  "bincode",
