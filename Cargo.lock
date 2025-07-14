@@ -1401,9 +1401,9 @@ dependencies = [
 
 [[package]]
 name = "openstack_types"
-version = "0.21.3"
+version = "0.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95fb0735b28209a12db85893cacc40ce20780ab630ec7a30dcb3313906465f24"
+checksum = "985f273e13b0d473ed589d53e60441618263448fac191e6ed0fff2ced27b95ef"
 dependencies = [
  "chrono",
  "serde",
