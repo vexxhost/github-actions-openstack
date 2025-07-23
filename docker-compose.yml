@@ -2,7 +2,7 @@ services:
   controller:
     build: .
     environment:
-      - RUST_LOG=debug
+      - RUST_LOG=info
     volumes:
       - type: bind
         source: config.toml
