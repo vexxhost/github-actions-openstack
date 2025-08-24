@@ -56,7 +56,7 @@ async fn webhook(
     State(state): State<AppState>,
     GithubWebhook(hook): GithubWebhook,
 ) -> impl IntoResponse {
-    println!("Received webhook: {:?}", hook);
+    println!("Received webhook: {hook:?}");
     println!("Using OpenStack auth URL: {:?}", state.config);
 
     StatusCode::OK
@@ -158,13 +158,12 @@ fn should_delete_runner(
     runner: &SelfHostedRunner,
     instance: Option<&ServerResponse>,
 ) -> Result<bool> {
-    if let Some(instance) = instance {
-        if instance.status.as_deref() == Some("ACTIVE")
-            || instance.status.as_deref() == Some("BUILD")
-        {
-            tracing::info!("runner has active instance, keeping");
-            return Ok(false);
-        }
+    if let Some(instance) = instance
+        && (instance.status.as_deref() == Some("ACTIVE")
+            || instance.status.as_deref() == Some("BUILD"))
+    {
+        tracing::info!("runner has active instance, keeping");
+        return Ok(false);
     }
 
     Ok(true)
