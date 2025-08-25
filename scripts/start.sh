@@ -15,4 +15,4 @@ tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 chown -R ${RUNNER_USER}:${RUNNER_GROUP} /opt/github/actions-runner
 
 # Start the runner
-su - ubuntu -c "/opt/github/actions-runner/${RUNNER_VERSION}/run.sh --jitconfig ${RUNNER_JITCONFIG}" &
+su - ${RUNNER_USER} -c "/opt/github/actions-runner/${RUNNER_VERSION}/run.sh --jitconfig ${RUNNER_JITCONFIG}" &
