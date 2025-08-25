@@ -252,7 +252,7 @@ impl OpenStack {
         jitconfig: &SelfHostedRunnerJitConfig,
     ) -> Result<(), OpenStackError> {
         tracing::debug!("preparing cloud-init configuration");
-        let cloud_init: cloud_config::Data = jitconfig.into();
+        let cloud_init = cloud_config::Data::from_jitconfig(jitconfig, pool);
 
         let session = self.session().await?;
 
@@ -341,6 +341,8 @@ pub struct Instance {
     pub flavor: String,
     pub image: String,
     network: String,
+    pub runner_user: String,
+    pub runner_group: String,
 }
 
 #[derive(Debug, Error)]
