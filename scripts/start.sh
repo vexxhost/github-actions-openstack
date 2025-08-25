@@ -5,6 +5,14 @@ RUNNER_GROUP=___RUNNER_GROUP___
 RUNNER_VERSION=${RUNNER_VERSION:-2.327.0}
 RUNNER_JITCONFIG=___JIT_CONFIG___
 
+if [ -f /etc/debian_version ]; then
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y 'libicu[0-9][0-9]'
+elif [ -f /etc/redhat-release ] || [ -f /etc/rocky-release ] || [ -f /etc/centos-release ]; then
+    yum install -y libicu || dnf install -y libicu
+fi
+
 # Download the runner package
 mkdir -p /opt/github/actions-runner/${RUNNER_VERSION}
 cd /opt/github/actions-runner/${RUNNER_VERSION}
