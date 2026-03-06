@@ -1,4 +1,4 @@
-FROM rust:1.89.0@sha256:57407b378b2b6e07b48a6135a20c87cc22ea6e249c0acf6cb1833ead3cf116e9 AS base
+FROM rust:1.94.0@sha256:0e6da0c8f06f25e9591f21c0f741cd4ff1086e271c3330f29f6e4e95869c7843 AS base
 RUN cargo install --locked cargo-chef sccache
 ENV RUSTC_WRAPPER=sccache SCCACHE_DIR=/sccache
 
