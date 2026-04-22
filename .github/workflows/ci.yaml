@@ -10,4 +10,4 @@ permissions: {}
 
 jobs:
   cargo:
-    uses: vexxhost/github-actions/.github/workflows/cargo.yml@main
+    uses: vexxhost/github-actions/.github/workflows/cargo.yml@ee90fdf77bca9a1426af5073b44cae27dc0bdaca # main
