@@ -1368,6 +1368,146 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d05e27ee213611ffe7d6348b942e8f942b37114c00cc03cec254295a4a17852e"
 
 [[package]]
+name = "openstack-types-block-storage"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19d04d4896ee007038434aff3bb53b780672e36a88770f5fa4612d4758431147"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-compute"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aacb1377e6d13671e656d54ea94b385b7474583019a39ecc59f227c00bd550f8"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-container-infrastructure-management"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "afa584e5f306a7d6cdea2612cc0466b768f8f95e84f7d7e889677e2c69980308"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-core"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8130021b71ecfcdc38315d23a0c06d7ed3f6b96238a71318864626080af9d173"
+dependencies = [
+ "chrono",
+ "serde",
+]
+
+[[package]]
+name = "openstack-types-dns"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f07485eef3a396bf664a06d4d835ec58437658273f3cf828916c2ec08420ce5"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-identity"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ba15bc676a15f338483429d16737837ba37733e3bf1dc044cfead4a8c06303b"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-image"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b2ba89a935754d7bfe3b77d03e30eccce85ee66658a62c0d0c987e8242d24f87"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-load-balancer"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9017ee076c1c8572067623fc2d2519bd0c4cf6b9003bcb7877539e33c21aa5e8"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-network"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3ecce36bb3764496a7e2cbf802676456ba8cc2ecd706fed344f8b50ffde27a1"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-object-store"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9a0fbfffc0382a529e34237364b1d79149c556c94e65bc8a049bea7a2595a0ed"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
+name = "openstack-types-placement"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec2bb48af773e804266f05ae975fbab77ac225225f65ba1759a149f2a33f76b8"
+dependencies = [
+ "chrono",
+ "openstack-types-core",
+ "serde",
+ "serde_json",
+ "structable",
+]
+
+[[package]]
 name = "openstack_sdk"
 version = "0.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1407,11 +1547,21 @@ dependencies = [
 
 [[package]]
 name = "openstack_types"
-version = "0.21.3"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95fb0735b28209a12db85893cacc40ce20780ab630ec7a30dcb3313906465f24"
+checksum = "24f5d77309a6e5d76d9f69dc275f29e9dcf14b7cabf306085fb837edd1a697e0"
 dependencies = [
  "chrono",
+ "openstack-types-block-storage",
+ "openstack-types-compute",
+ "openstack-types-container-infrastructure-management",
+ "openstack-types-dns",
+ "openstack-types-identity",
+ "openstack-types-image",
+ "openstack-types-load-balancer",
+ "openstack-types-network",
+ "openstack-types-object-store",
+ "openstack-types-placement",
  "serde",
  "serde_json",
  "structable",
